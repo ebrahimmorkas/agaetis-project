@@ -6,10 +6,11 @@ export type InputProps = InputHTMLAttributes<HTMLInputElement> & {
   error?: string
   hint?: string
   icon?: ReactNode
+  rightElement?: ReactNode
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ label, error, hint, icon, id, className, ...rest }, ref) => {
+  ({ label, error, hint, icon, rightElement, id, className, ...rest }, ref) => {
     const generatedId = useId()
     const inputId = id ?? generatedId
 
@@ -36,11 +37,13 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
               'placeholder:text-slate-400 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-100',
               'disabled:bg-slate-100 disabled:text-slate-500',
               icon && 'pl-10',
+              rightElement && 'pr-10',
               error && 'border-red-500 focus:border-red-500 focus:ring-red-100',
               className,
             )}
             {...rest}
           />
+          {rightElement && <span className="absolute inset-y-0 right-1.5 flex items-center">{rightElement}</span>}
         </div>
 
         {error ? (
