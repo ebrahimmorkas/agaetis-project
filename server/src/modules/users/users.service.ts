@@ -1,9 +1,12 @@
-import { and, asc, desc, eq, like, ne, or, type SQL } from 'drizzle-orm';
+import { and, asc, desc, eq, getTableColumns, like, ne, or, type SQL } from 'drizzle-orm';
 import { db } from '../../db/index.js';
 import { users } from '../../db/schema/index.js';
 import { ApiError } from '../../utils/ApiError.js';
 import { getPaginationMeta } from '../../utils/pagination.js';
+import { hashPassword } from '../../utils/password.js';
 import type { CreateUserInput, ListUsersQuery, UpdateUserInput } from './users.validation.js';
+
+const { password: _password, ...publicColumns } = getTableColumns(users);
 
 async function ensureEmailIsFree(email: string, excludeId?: number) {
   const conditions = [eq(users.email, email)];
@@ -29,7 +32,7 @@ export async function listUsers({ page, limit, search, role, sortBy, order }: Li
 
   const [items, total] = await Promise.all([
     db
-      .select()
+      .select(publicColumns)
       .from(users)
       .where(where)
       .orderBy(sortDirection(users[sortBy]), desc(users.id))
@@ -42,7 +45,7 @@ export async function listUsers({ page, limit, search, role, sortBy, order }: Li
 }
 
 export async function getUserById(id: number) {
-  const [user] = await db.select().from(users).where(eq(users.id, id)).limit(1);
+  const [user] = await db.select(publicColumns).from(users).where(eq(users.id, id)).limit(1);
   if (!user) throw ApiError.notFound('Employee not found');
   return user;
 }
@@ -50,7 +53,10 @@ export async function getUserById(id: number) {
 export async function createUser(data: CreateUserInput) {
   await ensureEmailIsFree(data.email);
 
-  const [created] = await db.insert(users).values(data).$returningId();
+  const [created] = await db
+    .insert(users)
+    .values({ ...data, password: await hashPassword(data.password) })
+    .$returningId();
   return getUserById(created!.id);
 }
 
