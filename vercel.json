@@ -1,4 +1,7 @@
 {
+  "installCommand": "npm install --prefix client",
+  "buildCommand": "npm run build --prefix client",
+  "outputDirectory": "client/dist",
   "rewrites": [
     { "source": "/api/(.*)", "destination": "https://agaetis-api.onrender.com/api/$1" },
     { "source": "/(.*)", "destination": "/index.html" }
