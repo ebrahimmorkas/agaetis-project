@@ -10,6 +10,12 @@ export const pool = mysql.createPool({
   password: env.DB_PASSWORD,
   database: env.DB_NAME,
   connectionLimit: 10,
+  timezone: 'Z',
+});
+
+// Drizzle reads timestamps back as UTC, so the session has to write them in UTC too
+pool.pool.on('connection', (conn) => {
+  conn.query("SET time_zone = '+00:00'");
 });
 
 export const db = drizzle(pool, { schema, mode: 'default' });
