@@ -1,7 +1,8 @@
 import { NavLink } from 'react-router-dom'
-import { LogOut, UserCircle, X, type LucideIcon } from 'lucide-react'
+import { LogOut, UserCircle, Users, UsersRound, X, type LucideIcon } from 'lucide-react'
 import { Avatar } from '@/components/ui'
 import { useAuthUser, useLogout } from '@/features/auth/hooks'
+import { hasAnyUserAccess } from '@/features/auth/permissions'
 import { roleLabels, type AuthUser } from '@/features/auth/types'
 import { cn } from '@/lib/cn'
 
@@ -12,7 +13,11 @@ type NavItem = {
   visible: (user: AuthUser) => boolean
 }
 
-const navItems: NavItem[] = [{ to: '/profile', label: 'My profile', icon: UserCircle, visible: () => true }]
+const navItems: NavItem[] = [
+  { to: '/users', label: 'Users', icon: Users, visible: hasAnyUserAccess },
+  { to: '/team', label: 'My team', icon: UsersRound, visible: (user) => user.role === 'manager' },
+  { to: '/profile', label: 'My profile', icon: UserCircle, visible: () => true },
+]
 
 type SidebarProps = {
   open: boolean

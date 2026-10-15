@@ -15,6 +15,8 @@ const schema = z.object({
 
 type FormValues = z.infer<typeof schema>
 
+const currentYear = new Date().getFullYear()
+
 const highlights = [
   { icon: ShieldCheck, text: 'Role based access for every team member' },
   { icon: UserCog, text: 'Fine grained permissions for admins' },
@@ -67,7 +69,7 @@ export function LoginPage() {
           </ul>
         </div>
 
-        <p className="relative text-sm text-primary-100/80">&copy; {new Date().getFullYear()} Agaetis</p>
+        <p className="relative text-sm text-primary-100/80">&copy; {currentYear} Agaetis</p>
       </aside>
 
       <main className="flex items-center justify-center px-4 py-12 sm:px-6">
