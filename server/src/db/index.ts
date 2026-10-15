@@ -11,6 +11,8 @@ export const pool = mysql.createPool({
   database: env.DB_NAME,
   connectionLimit: 10,
   timezone: 'Z',
+  // env vars often store the certificate with literal \n instead of line breaks
+  ssl: env.DB_SSL_CA ? { ca: env.DB_SSL_CA.replace(/\\n/g, '\n') } : undefined,
 });
 
 // Drizzle reads timestamps back as UTC, so the session has to write them in UTC too
