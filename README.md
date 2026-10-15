@@ -4,6 +4,17 @@ React + Express app written in TypeScript, backed by MySQL.
 
 **Live:** https://agaetis.vercel.app (API: https://agaetis-api.onrender.com/api/health)
 
+### Test credentials (live site)
+
+| Role | Email | Password |
+| --- | --- | --- |
+| Super Admin | superadmin@agaetis.tech | 5kJfPFwgC8Z3@7 |
+| Admin | admin@agaetis.tech | Admin@12345 |
+| Manager | manager@agaetis.tech | Manager@12345 |
+| Employee | employee@agaetis.tech | Employee@12345 |
+
+The admin has every permission for managers and employees, and the employee reports to the manager.
+
 The API runs on Render's free plan, so the first request after a quiet period can take up to a minute while it wakes up.
 
 ## Structure
