@@ -1,8 +1,18 @@
 import { NavLink } from 'react-router-dom'
-import { Users, X } from 'lucide-react'
+import { LogOut, UserCircle, X, type LucideIcon } from 'lucide-react'
+import { Avatar } from '@/components/ui'
+import { useAuthUser, useLogout } from '@/features/auth/hooks'
+import { roleLabels, type AuthUser } from '@/features/auth/types'
 import { cn } from '@/lib/cn'
 
-const navItems = [{ to: '/employees', label: 'Employees', icon: Users }]
+type NavItem = {
+  to: string
+  label: string
+  icon: LucideIcon
+  visible: (user: AuthUser) => boolean
+}
+
+const navItems: NavItem[] = [{ to: '/profile', label: 'My profile', icon: UserCircle, visible: () => true }]
 
 type SidebarProps = {
   open: boolean
@@ -10,13 +20,13 @@ type SidebarProps = {
 }
 
 export function Sidebar({ open, onClose }: SidebarProps) {
+  const user = useAuthUser()
+  const logout = useLogout()
+
   return (
     <>
       {open && (
-        <div
-          className="fixed inset-0 z-30 animate-fade-in bg-slate-900/40 lg:hidden"
-          onClick={onClose}
-        />
+        <div className="fixed inset-0 z-30 animate-fade-in bg-slate-900/40 lg:hidden" onClick={onClose} />
       )}
 
       <aside
@@ -45,25 +55,47 @@ export function Sidebar({ open, onClose }: SidebarProps) {
 
         <nav className="flex-1 space-y-1 px-3 py-4">
           <p className="px-3 pb-2 text-xs font-medium uppercase tracking-wider text-slate-400">Menu</p>
-          {navItems.map(({ to, label, icon: Icon }) => (
-            <NavLink
-              key={to}
-              to={to}
-              onClick={onClose}
-              className={({ isActive }) =>
-                cn(
-                  'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
-                  isActive
-                    ? 'bg-primary-50 text-primary-700'
-                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900',
-                )
-              }
-            >
-              <Icon size={18} />
-              {label}
-            </NavLink>
-          ))}
+          {navItems
+            .filter((item) => item.visible(user))
+            .map(({ to, label, icon: Icon }) => (
+              <NavLink
+                key={to}
+                to={to}
+                onClick={onClose}
+                className={({ isActive }) =>
+                  cn(
+                    'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                    isActive
+                      ? 'bg-primary-50 text-primary-700'
+                      : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900',
+                  )
+                }
+              >
+                <Icon size={18} />
+                {label}
+              </NavLink>
+            ))}
         </nav>
+
+        <div className="border-t border-slate-200 p-3">
+          <div className="flex items-center gap-3 rounded-lg px-2 py-2">
+            <Avatar name={user.name} size="sm" />
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-medium text-slate-900">{user.name}</p>
+              <p className="truncate text-xs text-slate-500">{roleLabels[user.role]}</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => logout.mutate()}
+              disabled={logout.isPending}
+              aria-label="Log out"
+              title="Log out"
+              className="rounded-lg p-2 text-slate-400 transition-colors hover:bg-red-50 hover:text-red-600"
+            >
+              <LogOut size={18} />
+            </button>
+          </div>
+        </div>
       </aside>
     </>
   )
