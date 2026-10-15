@@ -9,6 +9,9 @@ import routes from './routes/index.js';
 
 const app = express();
 
+// so req.ip (used by the login rate limiter) is the real client and not the proxy
+app.set('trust proxy', env.TRUST_PROXY);
+
 app.use(helmet());
 app.use(cors({ origin: env.CLIENT_URL, credentials: true }));
 app.use(express.json());

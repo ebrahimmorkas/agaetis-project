@@ -11,6 +11,11 @@ const envSchema = z.object({
   DB_USER: z.string().default('root'),
   DB_PASSWORD: z.string().default(''),
   DB_NAME: z.string().min(1),
+  // CA certificate (PEM) for hosted databases that require SSL, e.g. Aiven
+  DB_SSL_CA: z.string().optional(),
+
+  // number of proxies in front of the app (Render adds one)
+  TRUST_PROXY: z.coerce.number().int().min(0).default(0),
 
   JWT_SECRET: z.string().min(32, 'JWT_SECRET should be at least 32 characters'),
   JWT_EXPIRES_IN_DAYS: z.coerce.number().int().positive().default(7),
